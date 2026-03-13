@@ -1,0 +1,38 @@
+{
+  "name": "qwen-telegram-integration",
+  "version": "1.0.0",
+  "description": "Telegram bot integration for Qwen Code CLI",
+  "main": "qwen-telegram-server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node qwen-telegram-server.js",
+    "test": "echo \"No tests specified\" && exit 0"
+  },
+  "keywords": [
+    "qwen",
+    "qwen-code",
+    "telegram",
+    "bot",
+    "mcp",
+    "cli"
+  ],
+  "author": "Ilya Lazarev <ilya@bunker-255.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bunker-255/qwen-telegram-integration.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bunker-255/qwen-telegram-integration/issues"
+  },
+  "homepage": "https://github.com/bunker-255/qwen-telegram-integration#readme",
+  "dependencies": {
+    "telegraf": "^4.16.3"
+  },
+  "peerDependencies": {
+    "@qwen-code/qwen-code": ">=0.12.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
