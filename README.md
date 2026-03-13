@@ -44,6 +44,20 @@ qwen --telegram
 | `/clear` | Clear chat history |
 | `/status` | Show status |
 
+## 📸 Media Support
+
+The bot supports sending **photos** and **documents**:
+
+- **Photos**: Send an image with an optional caption/question
+- **Documents**: Send files with optional captions
+
+**Example:**
+```
+Send: [photo of code error]
+Caption: "What's wrong with this code?"
+Bot: [Analyzes and provides fix]
+```
+
 ## 🔧 Configuration
 
 ### Environment Variables
