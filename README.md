@@ -78,12 +78,6 @@ User: Write a sorting function in Python
 Bot: [Code with comments]
 ```
 
-### MCP Tools Integration
-```
-User: Create a task for API development
-Bot: [Task structure with subtasks via task-manager MCP]
-```
-
 ## 🔗 Links
 
 - **Qwen Code:** https://github.com/QwenLM/qwen-code
