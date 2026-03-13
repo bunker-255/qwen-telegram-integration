@@ -116,15 +116,15 @@ bot.on('text', async (ctx) => {
         let history = chatHistory.get(userId) || [];
         
         // Вызываем qwen через CLI
-        const response = await callQwen(message, history);
+        const qwenResponse = await callQwen(message, history);
         
         // Сохраняем в историю
         history.push({ role: 'user', content: message });
-        history.push({ role: 'assistant', content: response });
+        history.push({ role: "assistant", content: qwenResponse });
         chatHistory.set(userId, history);
         
         // Отправляем ответ с Markdown форматированием
-        await sendLongMessage(ctx, response);
+        await sendLongMessage(ctx, qwenResponse);
         
         console.log(`[${new Date().toISOString()}] Bot: ответ отправлен`);
         
@@ -332,3 +332,77 @@ async function main() {
 }
 
 main();
+
+// Обработка фотографий
+bot.on('photo', async (ctx) => {
+    const userId = ctx.from.id.toString();
+    const username = ctx.from.username || userId;
+    const caption = ctx.message.caption || '';
+    
+    console.log(`[${new Date().toISOString()}] ${username}: отправил фото`);
+    
+    await ctx.sendChatAction('typing');
+    
+    try {
+        // Получаем файл изображения
+        const fileId = ctx.message.photo[ctx.message.photo.length - 1].file_id;
+        const fileLink = await ctx.telegram.getFileLink(fileId);
+        
+        // Загружаем изображение
+        const response = await fetch(fileLink);
+        const buffer = await response.arrayBuffer();
+        const base64Image = Buffer.from(buffer).toString('base64');
+        
+        // Отправляем в Qwen с запросом на анализ
+        const prompt = caption 
+            ? `Проанализируй это изображение и ответь на вопрос: ${caption}`
+            : 'Опиши что изображено на этом фото';
+        
+        // Для анализа изображений нужен qwen с поддержкой vision
+        // Пока отправляем текстовый запрос
+        const history = chatHistory.get(userId) || [];
+        const qwenResponse = await callQwen(`${prompt}\n\n[Пользователь отправил изображение: ${fileId}]`, history);
+        
+        history.push({ role: 'user', content: `[Image: ${fileId}] ${caption}` });
+        history.push({ role: "assistant", content: qwenResponse });
+        chatHistory.set(userId, history);
+        
+        await sendLongMessage(ctx, qwenResponse);
+        
+    } catch (error) {
+        console.error(`Ошибка обработки фото: ${error.message}`);
+        await ctx.reply(`❌ *Ошибка:* ${escapeMarkdown(error.message)}`, { parse_mode: 'Markdown' });
+    }
+});
+
+// Обработка документов (файлов)
+bot.on('document', async (ctx) => {
+    const userId = ctx.from.id.toString();
+    const username = ctx.from.username || userId;
+    const fileName = ctx.message.document.file_name;
+    const caption = ctx.message.caption || '';
+    
+    console.log(`[${new Date().toISOString()}] ${username}: отправил файл ${fileName}`);
+    
+    await ctx.sendChatAction('typing');
+    
+    try {
+        const fileId = ctx.message.document.file_id;
+        const prompt = caption 
+            ? `Обработай этот файл "${fileName}" и ответь: ${caption}`
+            : `Пользователь отправил файл: ${fileName}`;
+        
+        const history = chatHistory.get(userId) || [];
+        const qwenResponse = await callQwen(`${prompt}\n\n[File: ${fileName}]`, history);
+        
+        history.push({ role: 'user', content: `[File: ${fileName}] ${caption}` });
+        history.push({ role: "assistant", content: qwenResponse });
+        chatHistory.set(userId, history);
+        
+        await sendLongMessage(ctx, qwenResponse);
+        
+    } catch (error) {
+        console.error(`Ошибка обработки файла: ${error.message}`);
+        await ctx.reply(`❌ *Ошибка:* ${escapeMarkdown(error.message)}`, { parse_mode: 'Markdown' });
+    }
+});
