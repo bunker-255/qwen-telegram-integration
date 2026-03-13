@@ -93,7 +93,7 @@ bot.command('status', async (ctx) => {
     
     await ctx.reply(
         `📊 *Статус*\n\n` +
-        `User ID: \\`${userId}\\`\n` +
+        "User ID: `" + userId + "`\n" +
         `Сообщений в истории: ${history.length}\n` +
         `Qwen Code: готов`,
         { parse_mode: 'Markdown' }
